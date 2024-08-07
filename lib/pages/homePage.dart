@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,7 +11,8 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   double _borderRadius = 100;
 
   final Tween<double> _pageBgScale = Tween<double>(
@@ -17,13 +20,38 @@ class _HomePageState extends State<HomePage> {
     end: 1.0,
   );
 
+  AnimationController? _starIconControler;
+
+  @override
+  void initState() {
+    super.initState();
+    _starIconControler = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        seconds: 4,
+      ),
+    );
+    _starIconControler!.repeat();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         clipBehavior: Clip.none,
         child: Stack(
-          children: [_pageBackground(), _AnimatedButton()],
+          children: [
+            _pageBackground(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _AnimatedButton(),
+                _starAnimation(),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -78,6 +106,23 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _starAnimation() {
+    return AnimatedBuilder(
+      animation: _starIconControler!.view,
+      builder: (_buildContext, _child) {
+        return Transform.rotate(
+          angle: _starIconControler!.value * 2 * pi,
+          child: _child,
+        );
+      },
+      child: const Icon(
+        Icons.star,
+        size: 100,
+        color: Colors.white,
       ),
     );
   }
